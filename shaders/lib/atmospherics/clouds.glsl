@@ -190,7 +190,7 @@ int maxIT_clouds = 15;
 int maxIT = 27;
 #endif
 
-float cdensity = 0.015;
+float cdensity = 0.025;
 
 float cloudSpeed = frameTimeCounter * 1;
 
