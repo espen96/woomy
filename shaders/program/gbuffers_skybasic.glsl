@@ -2,10 +2,10 @@
 BSL Shaders v7.2.01 by Capt Tatsu 
 https://bitslablab.com 
 */ 
-
+#extension GL_EXT_gpu_shader4 : enable
 //Settings//
 #include "/lib/settings.glsl"
-
+#define HQ_CLOUDS
 //Fragment Shader///////////////////////////////////////////////////////////////////////////////////
 #ifdef FSH
 
@@ -35,6 +35,12 @@ uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferProjectionInverse;
 
 uniform sampler2D noisetex;
+
+
+
+uniform vec2 texelSize;
+flat varying float tempOffsets;
+
 
 //Common Variables//
 #ifdef WORLD_TIME_ANIMATION
@@ -88,9 +94,30 @@ void SunGlare(inout vec3 color, vec3 viewPos, vec3 lightCol) {
 #include "/lib/atmospherics/clouds.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
+
+
+vec3 toScreenSpace(vec3 p) {
+	vec4 iProjDiag = vec4(gbufferProjectionInverse[0].x, gbufferProjectionInverse[1].y, gbufferProjectionInverse[2].zw);
+    vec3 p3 = p * 2. - 1.;
+    vec4 fragposition = iProjDiag * p3.xyzz + gbufferProjectionInverse[3];
+    return fragposition.xyz / fragposition.w;
+}
+
+float interleaved_gradientNoise(){
+	vec2 coord = gl_FragCoord.xy;
+	float noise = fract(52.9829189*fract(0.06711056*coord.x + 0.00583715*coord.y)+tempOffsets);
+	return noise;
+}
 //Program//
 void main() {
 	#ifdef OVERWORLD
+	vec2 halfResTC = vec2(floor(gl_FragCoord.xy));	
+		vec3 fragpos = toScreenSpace(vec3(halfResTC*texelSize,1.0));	
+	
+	
+	
+	
+	
 	vec4 screenPos = vec4(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z, 1.0);
 	vec4 viewPos = gbufferProjectionInverse * (screenPos * 2.0 - 1.0);
 	viewPos /= viewPos.w;
@@ -116,8 +143,12 @@ void main() {
 	#endif
 	
 	#ifdef CLOUDS
-	vec4 cloud = DrawCloud(viewPos.xyz, dither, lightCol, ambientCol);
-	albedo.rgb = mix(albedo.rgb, cloud.rgb, cloud.a);
+	
+//	vec4 currentClouds = renderClouds(fragpos,vec3(0.),interleaved_gradientNoise(),sunColor/150.,moonColor/150.,avgAmbient/150.);	
+	vec4 cloud = renderClouds(viewPos.xyz,vec3(0.),interleaved_gradientNoise(),lightCol,lightCol,ambientCol);	
+//	vec4 cloud = DrawCloud(viewPos.xyz, dither, lightCol, ambientCol);
+//	albedo.rgb = mix(albedo.rgb, cloud.rgb, cloud.a);
+	albedo.rgb = albedo.rgb*cloud.a+cloud.rgb;
 	#endif
 
 	SunGlare(albedo, viewPos.xyz, lightCol);
@@ -144,13 +175,28 @@ void main() {
 
 //Varyings//
 varying float star;
-
+flat varying float tempOffsets;
 varying vec3 sunVec, upVec;
 
 //Uniforms//
 uniform float timeAngle;
 
 uniform mat4 gbufferModelView;
+uniform int frameCounter;
+float HaltonSeq2(int index)
+    {
+        float r = 0.;
+        float f = 1.;
+        int i = index;
+        while (i > 0)
+        {
+            f /= 2.0;
+            r += f * (i % 2);
+            i = int(i / 2.0);
+        }
+        return r;
+    }
+
 
 //Program//
 void main() {
@@ -160,9 +206,9 @@ void main() {
 	sunVec = normalize((gbufferModelView * vec4(vec3(-sin(ang), cos(ang) * sunRotationData) * 2000.0, 1.0)).xyz);
 
 	upVec = normalize(gbufferModelView[1].xyz);
-	
+	tempOffsets = HaltonSeq2(frameCounter%10000);	
 	gl_Position = ftransform();
-
+	gl_Position.xy = gl_Position.xy*2.-1.0;
 	star = float(gl_Color.r == gl_Color.g && gl_Color.g == gl_Color.b && gl_Color.r > 0.0);
 }
 
