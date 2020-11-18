@@ -362,7 +362,7 @@ vec4 renderClouds(vec3 fragpositi, vec3 color,float dither,vec3 sunColor,vec3 mo
 
 
 		float shadowStep = 240.;
-		vec3 dV_Sun = normalize(mat3(gbufferModelViewInverse)*sunVec)*shadowStep;
+		vec3 dV_Sun = normalize(mat3(gbufferModelViewInverse)*(-sunVec))*shadowStep;
 
 		float mult = length(dV_view);
 

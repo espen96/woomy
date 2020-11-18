@@ -145,7 +145,7 @@ void main() {
 	#ifdef CLOUDS
 	
 //	vec4 currentClouds = renderClouds(fragpos,vec3(0.),interleaved_gradientNoise(),sunColor/150.,moonColor/150.,avgAmbient/150.);	
-	vec4 cloud = renderClouds(viewPos.xyz,vec3(0.),interleaved_gradientNoise(),lightCol,lightCol,ambientCol);	
+	vec4 cloud = renderClouds(viewPos.xyz,vec3(0.0),interleaved_gradientNoise(),lightCol,lightCol,ambientCol);	
 //	vec4 cloud = DrawCloud(viewPos.xyz, dither, lightCol, ambientCol);
 //	albedo.rgb = mix(albedo.rgb, cloud.rgb, cloud.a);
 	albedo.rgb = albedo.rgb*cloud.a+cloud.rgb;
