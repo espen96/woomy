@@ -164,7 +164,7 @@ void main() {
 	gl_FragData[0] = vec4(albedo, 1.0 - star);
     #if defined OVERWORLD && defined CLOUDS
     /* DRAWBUFFERS:04 */
-	gl_FragData[1] = vec4(cloud.a, 0.0, 0.0, 0.0);
+	gl_FragData[1] = vec4(-cloud.a, 0.0, 0.0, 0.0);
     #endif
 }
 
