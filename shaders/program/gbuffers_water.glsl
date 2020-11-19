@@ -538,7 +538,7 @@ if (water > 0.5) {
 		
 	}
 
-    /* DRAWBUFFERS:012 */
+    /* DRAWBUFFERS:017 */
     gl_FragData[0] = albedo;
 	gl_FragData[1] = vec4(vlAlbedo, 1.0);
 }

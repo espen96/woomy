@@ -47,7 +47,7 @@ https://bitslablab.com
   #define BLOOM_STRENGTH 0.50 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
   #define LENS_FLARE
   #define LENS_FLARE_STRENGTH 1.00 //[0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
-  #define AA 1 //[0 1 2]
+  #define AA 2 //[0 1 2]
   #define SHARPEN 0 //[0 1 2 3 4 5]
 //#define AUTO_EXPOSURE
   #define VIGNETTE

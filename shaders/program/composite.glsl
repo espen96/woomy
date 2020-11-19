@@ -38,6 +38,8 @@ uniform mat4 shadowProjection;
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
 uniform sampler2D colortex2;
+uniform sampler2D colortex3;
+uniform sampler2D colortex7;
 uniform sampler2D depthtex0;
 uniform sampler2D depthtex1;
 
@@ -114,9 +116,9 @@ void main() {
     vec2 rt_texcoord = texCoord.xy;
  
  
-  vec3 ref = texture2D(colortex2, texCoord.xy).rgb;
+  vec3 ref = texture2D(colortex7, texCoord.xy).rgb;
     bool water = matches(ref.b,water_mat);
-    float candidate = texture2D(colortex2,ref.xy + texCoord.xy).b;
+    float candidate = texture2D(colortex7,ref.xy + texCoord.xy).b;
     if ((water && matches(candidate, water_mat)) || (isTmixU(ref.b, water_mat, trans_mat) && isTmixU(candidate, water_mat, trans_mat))) {
         albedo_texcoord.xy += ref.xy;
     }

@@ -23,6 +23,7 @@ const int colortex0Format = R11F_G11F_B10F; //main scene
 const int colortex1Format = RGB8; //raw translucent, bloom, final scene
 const int colortex2Format = RGBA16; //temporal data
 const int colortex3Format = RGB8; //specular data
+const int colortex7Format = RGB8;
 const int gaux1Format = R8; //cloud alpha
 const int gaux2Format = RGB10_A2; //reflection image
 const int gaux3Format = RGB16; //normals
