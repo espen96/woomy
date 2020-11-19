@@ -186,8 +186,8 @@ float maxHeight = 3200.;
 int maxIT_clouds = 8;
 int maxIT = 15;
 #else
-int maxIT_clouds = 15;
-int maxIT = 27;
+int maxIT_clouds = 8;
+int maxIT = 15;
 #endif
 
 float cdensity = 0.025;
