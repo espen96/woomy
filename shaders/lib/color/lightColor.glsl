@@ -41,7 +41,7 @@ vec3 CalcLightColor(vec3 morning, vec3 day, vec3 afternoon, vec3 night, vec3 wea
 	vec3 me = mix(morning, afternoon, mefade);
 	vec3 dayAll = mix(me, day, 1.0 - dfade * sqrt(dfade));
 	vec3 c = mix(night, dayAll, sunVisibility);
-	c = mix(c, dot(c, vec3(0.299, 0.587, 0.114)) * weatherCol, rainStrength);
+	c = mix(c, dot(c, vec3(0.299, 0.587, 0.114)) * 4 * weatherCol, rainStrength);
 	return c * c;
 }
 

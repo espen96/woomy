@@ -181,7 +181,7 @@ void main() {
 	#else
 	vec3 vl = vec3(0.0);
     #endif
-	
+	    color.rgb *= translucent.rgb;
     /*DRAWBUFFERS:01*/
 	gl_FragData[0] = color;
 //	gl_FragData[0] = vec4(ref.rgb,0);	
