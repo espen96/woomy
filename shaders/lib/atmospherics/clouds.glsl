@@ -183,8 +183,8 @@ vec3 DrawAurora(vec3 viewPos, float dither, int samples) {
 float cloud_height = 1500.;
 float maxHeight = 3200.;
 #ifdef HQ_CLOUDS
-int maxIT_clouds = 15;
-int maxIT = 27;
+int maxIT_clouds = 8;
+int maxIT = 15;
 #else
 int maxIT_clouds = 15;
 int maxIT = 27;
