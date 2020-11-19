@@ -178,13 +178,49 @@ vec2 GetLightPos() {
 #ifdef RETRO_FILTER
 #include "/lib/util/dither.glsl"
 #endif
+vec3 Tonemap_Uchimura(vec3 x, float P, float a, float m, float l, float c, float b) {
+    // Uchimura 2017, "HDR theory and practice"
+    // Math: https://www.desmos.com/calculator/gslcdxvipg
+    // Source: https://www.slideshare.net/nikuque/hdr-theory-and-practicce-jp
+    float l0 = ((P - m) * l) / a;
+    float L0 = m - m / a;
+    float L1 = m + (1.0 - m) / a;
+    float S0 = m + l0;
+    float S1 = m + a * l0;
+    float C2 = (a * P) / (P - S1);
+    float CP = -C2 / P;
 
+    vec3 w0 = 1.0 - smoothstep(x, vec3(0.0), vec3(m));
+    vec3 w2 = step(m + l0, x);
+    vec3 w1 = 1.0 - w0 - w2;
+
+    vec3 T = m * pow(x / m, vec3(c)) + b;
+    vec3 S = P - (P - S1) * exp(CP * (x - S0));
+    vec3 L = m + a * (x - m);
+
+    return T * w0 + L * w1 + S * w2;
+}
+
+vec3 Tonemap_Uchimura(vec3 x) {
+    const float P = 1.0;  // max display brightness
+    const float a = 0.9;  // contrast
+    const float m = 0.07; // linear section start
+    const float l = 0.4;  // linear section length
+    const float c = 1.3; // black
+    const float b = 0.0;  // pedestal
+    return Tonemap_Uchimura(x, P, a, m, l, c, b);
+}
 //Program//
 void main() {
+
+
     vec2 newTexCoord = texCoord;
 	if (isEyeInWater == 1.0) UnderwaterDistort(newTexCoord);
 	
 	vec3 color = texture2D(colortex0, newTexCoord).rgb;
+//		 color = Tonemap_Uchimura(color);		
+	
+	
 	
 	#ifdef AUTO_EXPOSURE
 	float tempExposure = texture2D(colortex2, vec2(pw, ph)).r;
@@ -218,6 +254,7 @@ void main() {
 	#endif
 	
 	BSLTonemap(color);
+	
 	
 	#ifdef LENS_FLARE
 	vec2 lightPos = GetLightPos();
@@ -253,7 +290,7 @@ void main() {
 	
 //	float filmGrain = texture2D(noisetex, texCoord * vec2(viewWidth, viewHeight) / 512.0).b;
 //	color += (filmGrain - 0.25) / 128.0;
-	
+
 	/*DRAWBUFFERS:12*/
 	gl_FragData[0] = vec4(color,1.0);
 	gl_FragData[1] = vec4(temporalData,temporalColor);

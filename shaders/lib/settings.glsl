@@ -4,7 +4,7 @@ https://bitslablab.com
 */ 
 
 //Shader Options//
-
+const float ambientOcclusionLevel = 0.0; 
   #define ABOUT 0 //[0]
 
 //Visual//

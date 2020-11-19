@@ -1,6 +1,6 @@
 #ifdef OVERWORLD
 vec3 GetFogColor(vec3 viewPos) {
-	vec3 fog = fogCol * (vec3(1,10,10));
+	vec3 fog = fogCol * (vec3(1,10,10)*0.5);
 	vec3 nViewPos = normalize(viewPos);
 	float lViewPos = length(viewPos) / 64.0;
 	lViewPos = 1.0 - exp(-lViewPos * lViewPos);
