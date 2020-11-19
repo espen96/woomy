@@ -1,3 +1,5 @@
+
+
 /* 
 BSL Shaders v7.2.01 by Capt Tatsu 
 https://bitslablab.com 
@@ -11,7 +13,7 @@ https://bitslablab.com
 
 //Varyings//
 varying vec2 texCoord;
-
+uniform vec2 texelSize;
 //Uniforms//
 uniform sampler2D colortex1;
 
@@ -45,17 +47,23 @@ vec2 sharpenOffsets[4] = vec2[4](
 	vec2(-1.0,  0.0),
 	vec2( 0.0, -1.0)
 );
+float luma(vec3 color) {
+	return dot(color,vec3(0.299, 0.587, 0.114));
+}
 
 void SharpenFilter(inout vec3 color) {
-	float mult = SHARPEN * 0.025;
-	vec2 view = 1.0 / vec2(viewWidth, viewHeight);
+    //Weights : 1 in the center, 0.5 middle, 0.25 corners
+    vec3 albedoCurrent1 = texture2D(colortex1, texCoord + vec2(texelSize.x,texelSize.y)/MC_RENDER_QUALITY*0.5).rgb;
+    vec3 albedoCurrent2 = texture2D(colortex1, texCoord + vec2(texelSize.x,-texelSize.y)/MC_RENDER_QUALITY*0.5).rgb;
+    vec3 albedoCurrent3 = texture2D(colortex1, texCoord + vec2(-texelSize.x,-texelSize.y)/MC_RENDER_QUALITY*0.5).rgb;
+    vec3 albedoCurrent4 = texture2D(colortex1, texCoord + vec2(-texelSize.x,texelSize.y)/MC_RENDER_QUALITY*0.5).rgb;
 
-	color *= SHARPEN * 0.1 + 1.0;
 
-	for(int i = 0; i < 4; i++) {
-		vec2 offset = sharpenOffsets[i] * view;
-		color -= texture2D(colortex1, texCoord + offset).rgb * mult;
-	}
+    vec3 m1 = -0.5/3.5*color + albedoCurrent1/3.5 + albedoCurrent2/3.5 + albedoCurrent3/3.5 + albedoCurrent4/3.5;
+    vec3 std = abs(color - m1) + abs(albedoCurrent1 - m1) + abs(albedoCurrent2 - m1) +
+     abs(albedoCurrent3 - m1) + abs(albedoCurrent3 - m1) + abs(albedoCurrent4 - m1);
+    float contrast = 1.0 - luma(std)/5.0;
+    color = color*(1.0+(SHARPEN)*contrast) - (SHARPEN)/(1.0-0.5/3.5)*contrast*(m1 - 0.5/3.5*color);
 }
 #endif
 
