@@ -37,6 +37,7 @@ uniform mat4 shadowProjection;
 
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
+uniform sampler2D colortex2;
 uniform sampler2D depthtex0;
 uniform sampler2D depthtex1;
 
@@ -84,10 +85,23 @@ float GetLinearDepth(float depth) {
 #include "/lib/outline/blackOutline.glsl"
 #endif
 
+
+#define water_mat 0.1
+#define trans_mat 0.15
+
+bool matches(float l, float r) {
+    return l > r - 0.01 && l < r + 0.01;
+}
+bool isTmixU(float mat, float mat_1, float mat_2){
+    return (mat > mat_1 + 0.01) && (mat < mat_2 + 0.01);
+}
+
+
+
 //Program//
 void main() {
-    vec4 color = texture2D(colortex0, texCoord);
-    vec3 translucent = texture2D(colortex1,texCoord).rgb;
+
+
 	float z0 = texture2D(depthtex0, texCoord).r;
 	float z1 = texture2D(depthtex1, texCoord).r;
 	
@@ -95,6 +109,34 @@ void main() {
 	vec4 viewPos = gbufferProjectionInverse * (screenPos * 2.0 - 1.0);
 	viewPos /= viewPos.w;
     
+	
+    vec2 albedo_texcoord = texCoord.xy;
+    vec2 rt_texcoord = texCoord.xy;
+ 
+ 
+  vec3 ref = texture2D(colortex2, texCoord.xy).rgb;
+    bool water = matches(ref.b,water_mat);
+    float candidate = texture2D(colortex2,ref.xy + texCoord.xy).b;
+    if ((water && matches(candidate, water_mat)) || (isTmixU(ref.b, water_mat, trans_mat) && isTmixU(candidate, water_mat, trans_mat))) {
+        albedo_texcoord.xy += ref.xy;
+    }
+    if (water) {
+        rt_texcoord.xy = albedo_texcoord.xy;
+    }
+    
+
+    z0 = texture2D(depthtex0,albedo_texcoord.xy).r;
+    z1 = texture2D(depthtex1,albedo_texcoord.xy).r;
+    vec4 color = texture2D(colortex0, albedo_texcoord.xy);
+    vec3 translucent = texture2D(colortex1,rt_texcoord.xy).rgb;	
+	
+	
+	
+	
+	
+	
+	
+	
 	#if defined AO || defined LIGHT_SHAFT
 	float dither = Bayer64(gl_FragCoord.xy);
 	#endif
@@ -140,6 +182,7 @@ void main() {
 	
     /*DRAWBUFFERS:01*/
 	gl_FragData[0] = color;
+//	gl_FragData[0] = vec4(ref.rgb,0);	
 	gl_FragData[1] = vec4(vl, 1.0);
 	
     #ifdef REFLECTION_PREVIOUS

@@ -109,8 +109,8 @@ float GetWaterHeightMap(vec3 worldPos, vec2 offset) {
 	float noiseB = texture2D(noisetex, (worldPos.xz + wind) / 48.0 + offset).g;
 	#elif WATER_NORMALS == 2
 	offset /= 256.0;
-	float noiseA = texture2D(noisetex, (worldPos.xz - wind * 1.4) / 512.0 + offset).r;
-	float noiseB = texture2D(noisetex, (worldPos.xz + wind) / 96.0 + offset).r;
+	float noiseA = texture2D(noisetex, (worldPos.xz - wind * 1.4) / 512.0 + offset).b;
+	float noiseB = texture2D(noisetex, (worldPos.xz + wind) / 96.0 + offset).b;
 	noiseA *= noiseA; noiseB *= noiseB;
 	#endif
 	
@@ -190,6 +190,25 @@ vec3 GetWaterNormal(vec3 worldPos, vec3 viewPos, vec3 viewVector) {
 #include "/lib/reflections/rainPuddles.glsl"
 #endif
 #endif
+
+
+
+
+
+
+
+vec2 getRefraction(vec3 fragpos, vec3 wnormal) {
+	float waterRefractionStrength = 1.015;
+	//vec2 waterTexcoord = texcoord.xy;
+	waterRefractionStrength *= mix(0.2, 1.0, exp(-pow(length(fragpos.xyz) * 0.04, 1.5)));
+    vec2 waterTexcoord = wnormal.xy * waterRefractionStrength;//gl_FragCoord.xy/vec2(viewWidth,viewHeight) + 
+    return waterTexcoord;
+}
+
+
+
+
+
 
 //Program//
 void main() {
@@ -503,9 +522,23 @@ void main() {
 		#ifdef FOG
 		Fog(albedo.rgb, viewPos);
 		#endif
+		
+		
+		
+
+if (water > 0.5) {
+    gl_FragData[2] = vec4(getRefraction(viewPos, normalize(normalMap)), 0.1, 1.0);
+} else {
+    gl_FragData[2] = vec4(0.0,0.0,0.15,0.5);
+}
+
+		
+		
+		
+		
 	}
 
-    /* DRAWBUFFERS:01 */
+    /* DRAWBUFFERS:012 */
     gl_FragData[0] = albedo;
 	gl_FragData[1] = vec4(vlAlbedo, 1.0);
 }

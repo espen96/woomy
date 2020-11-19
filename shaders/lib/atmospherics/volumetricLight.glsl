@@ -67,7 +67,7 @@ vec3 getVolumetricRays(float pixeldepth0, float pixeldepth1, vec3 color, float d
 		
 		vec3 watercol = mix(vec3(1.0), waterColor.rgb / sqrt(waterColor.a), pow(waterAlpha, 0.25));
 		
-		for(int i = 0; i < 7; i++) {
+		for(int i = 0; i < 5; i++) {
 			float minDist = exp2(i + dither) - 0.9;
 			if (minDist >= maxDist) break;
 
