@@ -251,7 +251,7 @@ void main() {
 		#endif
 		vec3 worldPos = ToWorld(viewPos);
 
-		float dither = Bayer64(gl_FragCoord.xy);
+		float dither = R2_dither();
 
 		#if DISTANT_FADE > 0
 		if (AA == 2) dither = fract(frameTimeCounter * 16.0 + dither);

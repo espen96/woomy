@@ -140,7 +140,7 @@ void main() {
 	
 	
 	#if defined AO || defined LIGHT_SHAFT
-	float dither = Bayer64(gl_FragCoord.xy);
+	float dither = R2_dither();
 	#endif
 
 	#ifdef AO

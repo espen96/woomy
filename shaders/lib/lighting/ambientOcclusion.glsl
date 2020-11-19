@@ -5,7 +5,7 @@ vec2 OffsetDist(float x, int s) {
 
 float AmbientOcclusion(sampler2D depth, float dither) {
 	float ao = 0.0;
-	int samples = 10;
+	int samples = 3;
 
 	#if AA == 2
 	dither = fract(frameTimeCounter * 4.0 + dither);

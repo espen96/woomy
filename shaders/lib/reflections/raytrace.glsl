@@ -27,7 +27,7 @@ vec4 Raytrace(sampler2D depthtex, vec3 viewPos, vec3 normal, float dither,
 
     int sr = 0;
 
-    for(int i = 0; i < 30; i++) {
+    for(int i = 0; i < 10; i++) {
         pos = nvec3(gbufferProjection * nvec4(viewPos)) * 0.5 + 0.5;
 		if (pos.x < -0.05 || pos.x > 1.05 || pos.y < -0.05 || pos.y > 1.05) break;
 

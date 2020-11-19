@@ -150,7 +150,7 @@ void main() {
 	float z         = texture2D(depthtex0, texCoord).r;
 	float isGlowing = texture2D(colortex3, texCoord).b;
 
-	float dither = Bayer64(gl_FragCoord.xy);
+	float dither = R2_dither();
 	
 	vec4 screenPos = vec4(texCoord, z, 1.0);
 	vec4 viewPos = gbufferProjectionInverse * (screenPos * 2.0 - 1.0);

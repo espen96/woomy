@@ -2,7 +2,7 @@
 BSL Shaders v7.2.01 by Capt Tatsu 
 https://bitslablab.com 
 */ 
-
+#extension GL_EXT_gpu_shader4: enable
 //Settings//
 #include "/lib/settings.glsl"
 
@@ -43,6 +43,7 @@ uniform mat4 shadowProjection;
 uniform mat4 shadowModelView;
 
 uniform sampler2D texture;
+uniform sampler2D noisetex;
 
 #ifdef SOFT_PARTICLES
 uniform sampler2D depthtex0;
@@ -106,7 +107,7 @@ void main() {
 		vec3 worldPos = ToWorld(viewPos);
 
 		#if DISTANT_FADE > 0
-		float dither = Bayer64(gl_FragCoord.xy);
+		float dither = R2_dither();
 		if (AA == 2) dither = fract(frameTimeCounter * 16.0 + dither);
 		#if DISTANT_FADE == 1
 		float worldLength = length(worldPos);
